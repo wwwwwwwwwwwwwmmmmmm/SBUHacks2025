@@ -41,8 +41,16 @@ export async function POST(req: Request) {
             const positive_feedback: string[] = [];
             const negative_feedback: string[] = [];
 
-            for (const p of positives) if (lower.includes(p)) positive_feedback.push(p);
-            for (const n of negatives) if (lower.includes(n)) negative_feedback.push(n);
+            for (const p of positives) {
+                if (lower.includes(p)) {
+                    positive_feedback.push(p);
+                }
+            }
+            for (const n of negatives) {
+                if (lower.includes(n)) {
+                    negative_feedback.push(n);
+                }
+            }
 
             // Fallback examples if none found
             if (positive_feedback.length === 0 && trimmed.length > 0) positive_feedback.push('service was adequate');

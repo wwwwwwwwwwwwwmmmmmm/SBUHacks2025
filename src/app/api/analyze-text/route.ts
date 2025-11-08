@@ -86,7 +86,3 @@ export async function POST(req: Request) {
         return NextResponse.json({ok: false, error: msg}, {status: 500});
     }
 }
-
-export async function GET() {
-    return NextResponse.json({ok: true, info: 'Mock AI: POST { text } returns analysis'});
-}

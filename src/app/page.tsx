@@ -48,7 +48,7 @@ export default function Home() {
             const fd = new FormData();
             fd.append("file", file, file.name);
 
-            const res = await fetch("/api/upload-filew", {
+            const res = await fetch("/api/upload-file", {
                 method: "POST",
                 body: fd,
             });

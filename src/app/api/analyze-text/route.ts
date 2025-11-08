@@ -8,89 +8,117 @@ export async function POST(req: Request) {
         const fileName = typeof body?.fileName === 'string' ? body.fileName : null;
         const filePath = typeof body?.filePath === 'string' ? body.filePath : null;
 
+        if (!text.trim()) {
+            return NextResponse.json({ok: false, error: 'Missing transcript text'}, {status: 400});
+        }
+
         // Create Supabase server client
         const supabase = await createClient();
 
-        // Insert transcript record (bare minimum: file name and path)
+        // Insert transcript entry (optional file metadata)
         let transcriptId: number | null = null;
         if (fileName || filePath) {
             const {data: tData, error: tError} = await supabase
                 .from('transcripts')
-                .insert({file_name: fileName ?? 'unknown.txt', file_path: filePath ?? null})
+                .insert({
+                    file_name: fileName ?? 'unknown.txt',
+                    file_path: filePath ?? null,
+                })
                 .select('id')
                 .single();
 
             if (tError) {
-                // Log and continue — transcript insertion is important but we still want to demonstrate analysis
-                console.error('Failed to insert transcript:', tError.message);
-            } else if (tData && typeof tData.id === 'number') {
+                console.error('❌ Failed to insert transcript:', tError.message);
+            } else {
                 transcriptId = tData.id;
             }
         }
 
-        // Call a mocked "neuralseek" service (barebones demo)
-        function mockNeuralSeek(inputText: string) {
-            const trimmed = inputText.trim();
-            const summary = trimmed.length > 0 ? trimmed.slice(0, 280) : 'No text provided';
-
-            // Very naive sentiment-like extraction based on keywords
-            const positives = ['good', 'great', 'helpful', 'excellent', 'fast', 'friendly'];
-            const negatives = ['bad', 'slow', 'unhelpful', 'rude', 'long', 'wait'];
-
-            const lower = inputText.toLowerCase();
-            const positive_feedback: string[] = [];
-            const negative_feedback: string[] = [];
-
-            for (const p of positives) {
-                if (lower.includes(p)) {
-                    positive_feedback.push(p);
-                }
-            }
-            for (const n of negatives) {
-                if (lower.includes(n)) {
-                    negative_feedback.push(n);
-                }
-            }
-
-            // Fallback examples if none found
-            if (positive_feedback.length === 0 && trimmed.length > 0) positive_feedback.push('service was adequate');
-            if (negative_feedback.length === 0 && trimmed.length > 0) negative_feedback.push('no glaring issues found');
-
-            return {summary, positive_feedback, negative_feedback};
+        // --- CALL NEURALSEEK ---
+        const apiKey = process.env.NEURALSEEK_API_KEY;
+        if (!apiKey) {
+            throw new Error("Missing NEURALSEEK_API_KEY in environment");
         }
 
-        const aiResult = mockNeuralSeek(text);
+        const transcript = text;
 
-        // Insert analysis into DB
-        let analysisId: number | null = null;
+        // Use NeuralSeek's `ntl` style payload directly
+        const nsBody = {
+            ntl: "", // your NeuralSeek template name or leave empty if using raw prompt
+            agent: "Parser",
+            params: [
+                {
+                    name: "transcript",
+                    value: transcript,
+                },
+            ],
+            options: {
+                streaming: false,
+                returnVariables: true,
+                returnRender: false,
+                returnSource: false,
+                maxRecursion: 10,
+                temperatureMod: 1,
+                toppMod: 1,
+                freqpenaltyMod: 1,
+                timeout: 600000,
+            },
+        };
+
+        const response = await fetch("https://stagingapi.neuralseek.com/v1/stony18/maistro", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(nsBody),
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`NeuralSeek returned ${response.status}: ${errText}`);
+        }
+
+        // --- Parse NeuralSeek JSON result directly ---
+        const result = await response.json();
+        const output = JSON.parse(result.variables.llmOutput)
+        // If NeuralSeek returns the object directly (no "answer" wrapping)
+        const aiResult = {
+            summary: output.summary ?? "",
+            positive_feedback: output.positive_feedback ?? [],
+            negative_feedback: output.negative_feedback ?? [],
+        };
+
+        // --- Insert analysis result into database ---
         const {data: aData, error: aError} = await supabase
-            .from('analyses')
+            .from("analyses")
             .insert({
                 transcript_id: transcriptId,
                 summary: aiResult.summary,
                 positive_feedback: aiResult.positive_feedback,
                 negative_feedback: aiResult.negative_feedback,
             })
-            .select('id')
+            .select("id")
             .single();
 
+
         if (aError) {
-            console.error('Failed to insert analysis:', aError.message);
-        } else if (aData && typeof aData.id === 'number') {
-            analysisId = aData.id;
+            throw new Error(`Supabase insert failed: ${aError.message}`);
         }
 
-        const result = {
-            transcriptId,
-            analysisId,
-            summary: aiResult.summary,
-            positive_feedback: aiResult.positive_feedback,
-            negative_feedback: aiResult.negative_feedback,
-        };
-
-        return NextResponse.json({ok: true, result});
-    } catch (err: unknown) {
+        return NextResponse.json({
+            ok: true,
+            result: {
+                transcriptId,
+                analysisId: aData.id,
+                summary: aiResult.summary,
+                positive_feedback: aiResult.positive_feedback,
+                negative_feedback: aiResult.negative_feedback,
+            },
+        });
+    } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
+        console.error('❌ API Error:', msg);
         return NextResponse.json({ok: false, error: msg}, {status: 500});
     }
 }

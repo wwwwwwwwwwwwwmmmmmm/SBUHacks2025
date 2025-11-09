@@ -6,6 +6,7 @@ import Link from "next/link";
 import ThemeToggle from "../components/ThemeToggle";
 import Script from 'next/script';
 import NavbarSizeSync from '../components/NavbarSizeSync';
+import Image from 'next/image';
 
 
 const geistSans = Geist({
@@ -26,9 +27,19 @@ export const metadata: Metadata = {
 function Navbar() {
     return (
         <nav className={`${geistSans.variable} app-navbar text-on-primary p-4 flex justify-between items-center`}>
-            <div className="font-bold text-lg">
+            {/* Logo + Company Name */}
+            <div className="flex items-center space-x-2 font-bold text-lg">
+                <Image
+                    src="/favicon.png"
+                    alt="Our company logo"
+                    width={40}
+                    height={40}
+                    // className="rounded-full"
+                />
                 <Link href="/" className="nav-link nav-brand">CLP</Link>
             </div>
+
+            {/* Navigation Links + Theme Toggle */}
             <div className="flex items-center space-x-6">
                 <div className="hidden sm:flex sm:items-center sm:space-x-6">
                     <Link href="/" className="nav-link">Home</Link>

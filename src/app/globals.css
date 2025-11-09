@@ -279,7 +279,7 @@ body {
     border-bottom: 1px solid rgb(var(--navbar-blue) / 0.12);
 
     /* ensure the bar visually separates from page content */
-    margin-bottom: 14px;
+    /*margin-bottom: 14px;*/
     z-index: 40;
 
     /* expose an explicit navbar-height variable so pages can subtract it from 100vh
@@ -441,7 +441,7 @@ body {
 /* Make navbar-height available globally (variables on .app-navbar don't inherit to siblings) */
 :root {
     --app-navbar-height: 64px;
-    --app-navbar-margin-bottom: 14px;
+    /*--app-navbar-margin-bottom: 14px;*/
 }
 
 /* Helper class to apply the viewport-minus-navbar height calculation reliably (non-Tailwind) */

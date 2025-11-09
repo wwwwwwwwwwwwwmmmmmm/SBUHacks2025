@@ -18,6 +18,10 @@
     --color-primary-strong: 37 99 235; /* blue-600 */
     --color-on-primary: 255 255 255; /* text on primary */
 
+    /* Navbar tint for light theme: slightly darker than primary so it reads as a bar */
+    /* DARKENED from 30 64 175 to 22 55 148 to make the bar a bit deeper */
+    --navbar-blue: 22 55 148; /* darker blue */
+
     /* positive (green) */
     --color-positive: 6 95 70; /* green-ish */
     --color-positive-strong: 5 150 105;
@@ -72,6 +76,9 @@
     --color-primary: 59 130 246; /* keep blue primary but looks good on dark */
     --color-primary-strong: 37 99 235;
     --color-on-primary: 255 255 255;
+
+    /* Navbar tint for dark theme: darken slightly from 59 130 246 to 37 99 235 so it's deeper */
+    --navbar-blue: 37 99 235; /* darker blue for dark mode */
 
     --color-card: 6 6 6; /* near black */
     --color-card-border: 34 34 34;
@@ -246,4 +253,85 @@ body {
 .light {
     /* also provide CSS custom properties with RGB components (no alpha) that tailwind.config references */
     --color-background-rgb: var(--color-background);
+}
+
+/* Helper for links placed on a primary-colored background */
+.text-on-primary {
+    color: var(--on-primary);
+}
+
+/* Navbar styles: a distinct bar with a theme-aware blue tint */
+.app-navbar {
+    /* NOTE: --navbar-blue is provided by the `.light` / `.dark` classes above so
+       the bar changes appropriately with theme while remaining visually distinct. */
+
+    background: rgb(var(--navbar-blue) / 1);
+    color: rgb(255 255 255 / 1);
+
+    /* Prefer the Geist font variable injected on the element; fall back to system font stack */
+    font-family: var(--font-geist-sans), Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, Helvetica, sans-serif;
+
+    /* visual separation: use a subtle border derived from the navbar tint */
+    box-shadow: 0 2px 8px rgba(2, 6, 23, 0.18);
+    border-bottom: 1px solid rgb(var(--navbar-blue) / 0.12);
+
+    /* ensure the bar visually separates from page content */
+    margin-bottom: 14px;
+    z-index: 40;
+}
+
+/* Explicit theme-aware overrides to guarantee visible changes when the body toggles .light/.dark */
+.light .app-navbar {
+    /* darker blue in light mode */
+    background: rgb(var(--navbar-blue) / 1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(2, 6, 23, 0.12);
+}
+
+.dark .app-navbar {
+    /* slightly brighter / more saturated blue in dark mode for contrast */
+    background: rgb(var(--navbar-blue) / 1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+}
+
+/* Link styles inside the navbar */
+.nav-link {
+    color: rgb(255 255 255 / 0.95);
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    transition: background-color 0.12s ease, color 0.12s ease, transform 0.08s ease;
+}
+
+/* Add noticeable gap between inline nav-links (in case utility spacing isn't applied) */
+.app-navbar .nav-link + .nav-link {
+    margin-left: 12px;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgb(255 255 255 / 1);
+    transform: translateY(-1px);
+}
+
+/* Make sure the brand/title stands out a bit more */
+.app-navbar .font-bold {
+    color: rgb(255 255 255 / 1);
+}
+
+/* Responsive tweak: ensure mobile nav has adequate spacing */
+@media (max-width: 640px) {
+    .app-navbar {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .app-navbar .nav-link {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
 }

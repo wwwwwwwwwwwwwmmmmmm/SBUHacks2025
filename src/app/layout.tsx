@@ -24,15 +24,15 @@ export const metadata: Metadata = {
 
 function Navbar() {
   return (
-      <nav className="bg-primary-strong text-on-primary p-4 flex justify-between items-center">
+      <nav className={`${geistSans.variable} app-navbar text-on-primary p-4 flex justify-between items-center`}>
       <div className="font-bold text-lg">
-          <Link href="/" className="hover:text-primary">CLP Flow</Link>
+          <Link href="/" className="nav-link">CLP Flow</Link>
       </div>
           <div className="flex items-center space-x-4">
-              <div className="space-x-4 hidden sm:inline">
-                  <Link href="/" className="hover:text-primary">Home</Link>
-                  <Link href="/results" className="hover:text-primary">Data</Link>
-                  <Link href="/chatbot" className="hover:text-primary">Chatbot</Link>
+              <div className="hidden sm:flex sm:items-center sm:space-x-6">
+                  <Link href="/" className="nav-link">Home</Link>
+                  <Link href="/results" className="nav-link">Data</Link>
+                  <Link href="/chatbot" className="nav-link">Chatbot</Link>
               </div>
               <div className="flex items-center space-x-4">
                   <ThemeToggle/>

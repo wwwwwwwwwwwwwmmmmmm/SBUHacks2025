@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, {useEffect, useRef, useState} from "react";
 
-let sessionHolder = 100;
+const sessionHolder = 100;
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]>([]);
@@ -94,21 +94,26 @@ export default function ChatPage() {
         }
       }
     }
-  } catch (err: any) {
+    } catch (err) {
     console.error("AI call failed", err);
-    const aiMessage = { role: "ai" as const, text: `Failed to get response: ${err.message}` };
+        // Prefer Error message when available (avoid `any` for lint rules)
+        let msg: string;
+        if (err instanceof Error) msg = err.message;
+        else msg = String(err);
+        const aiMessage = {role: "ai" as const, text: `Failed to get response: ${msg}`};
     setMessages((prev) => [...prev, aiMessage]);
-  }
-};
+    }
+  };
 // console.log(messages)
 
 
   return (
-    <div className="flex flex-col h-screen w-full bg-zinc-100 dark:bg-black p-2">
+      <div className="flex flex-col h-screen w-full bg-background p-2">
       {/* Chat messages */}
-      <div className="flex-1 w-full max-w-7xl mx-auto overflow-auto mb-2 p-2 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 flex flex-col gap-2">
+          <div
+              className="flex-1 w-full max-w-7xl mx-auto overflow-auto mb-2 p-2 rounded-lg bg-card border border-card-border flex flex-col gap-2">
         {messages.length === 0 && (
-          <div className="text-zinc-500 text-center mt-2">Start chatting...</div>
+            <div className="text-muted text-center mt-2">Start chatting...</div>
         )}
 
         {messages.map((m, i) => (
@@ -116,8 +121,8 @@ export default function ChatPage() {
             key={i}
             className={`inline-block p-3 rounded-lg whitespace-pre-wrap break-words transition-all duration-300 ease-in-out transform hover:scale-105 ${
               m.role === "user"
-                ? "ml-auto bg-blue-500 text-white max-w-[55%]"
-                : "mr-auto bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white max-w-[55%]"
+                  ? "ml-auto bg-primary text-on-primary max-w-[55%]"
+                  : "mr-auto bg-card text-foreground max-w-[55%]"
             }`}
           >
             {m.text}
@@ -134,12 +139,12 @@ export default function ChatPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          className="flex-1 p-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-black dark:text-white"
+          className="flex-1 p-3 rounded-lg border border-card-border bg-card text-foreground"
           placeholder="Type a message..."
         />
         <button
           onClick={sendMessage}
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+          className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-strong text-on-primary"
         >
           Send
         </button>

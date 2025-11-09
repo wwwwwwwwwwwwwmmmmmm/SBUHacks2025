@@ -59,7 +59,7 @@ export default function ResultsClient({
         return (
             <span>
                 {before}
-                <mark style={{background: "#fffbcc"}}>{match}</mark>
+                <mark className="mark-highlight">{match}</mark>
                 {after}
             </span>
         );
@@ -67,106 +67,86 @@ export default function ResultsClient({
 
     return (
         <div>
-            <div style={{marginBottom: 12, color: '#444'}}>
+            <div className="mb-3 text-muted">
                 <strong>Totals:</strong> {rows.length} analyses · {totalPosPhrases} positive phrases
                 · {totalNegPhrases} negative phrases
             </div>
-            <section style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24}}>
-                <div style={{
-                    background: "linear-gradient(180deg,#f0fdf4,#ffffff)",
-                    padding: 18,
-                    borderRadius: 12,
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
-                    border: "1px solid rgba(16,185,129,0.08)"
-                }}>
-                    <h2 style={{marginTop: 0, marginBottom: 8, color: "#065f46"}}>Positive</h2>
-                    <p style={{marginTop: 0, marginBottom: 12, color: "#065f46"}}>{Object.keys(topPos).length} unique
-                        words</p>
-                    <div style={{width: "100%", height: 420}}>
+
+            <section className="responsive-grid">
+                <div className="card card-positive">
+                    <h2 className="m-0 mb-2 text-positive">Positive</h2>
+                    <p className="m-0 mb-3 text-positive">{Object.keys(topPos).length} unique words</p>
+                    <div className="cloud-area">
                         {/* light green base, darker green on hover is handled inside WordCloud */}
-                        <WordCloud title="" wordCounts={topPos} fill="#0bf7f0"
+                        <WordCloud title="" wordCounts={topPos} fill="var(--positive)"
                                    onWordClickAction={(w) => toggleWord(w, 'positive')} wordType={1}/>
                     </div>
                 </div>
 
-                <div style={{
-                    background: "linear-gradient(180deg,#fff7f6,#ffffff)",
-                    padding: 18,
-                    borderRadius: 12,
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
-                    border: "1px solid rgba(239,68,68,0.06)"
-                }}>
-                    <h2 style={{marginTop: 0, marginBottom: 8, color: "#7f1d1d"}}>Negative</h2>
-                    <p style={{marginTop: 0, marginBottom: 12, color: "#7f1d1d"}}>{Object.keys(topNeg).length} unique
-                        words</p>
-                    <div style={{width: "100%", height: 420}}>
+                <div className="card card-negative">
+                    <h2 className="m-0 mb-2 text-negative">Negative</h2>
+                    <p className="m-0 mb-3 text-negative">{Object.keys(topNeg).length} unique words</p>
+                    <div className="cloud-area">
                         {/* light red base, darker red on hover is handled inside WordCloud */}
-                        <WordCloud title="" wordCounts={topNeg} fill="#FF0B0B"
+                        <WordCloud title="" wordCounts={topNeg} fill="var(--negative)"
                                    onWordClickAction={(w) => toggleWord(w, 'negative')} wordType={-1}/>
                     </div>
                 </div>
             </section>
 
-            <div style={{marginTop: 28}}>
+            <div className="mt-7">
                 {selected ? (
                     <div>
-                        <h3 style={{margin: 0}}>Analyses
-                            containing &quot;{selected.word}&quot; ({selected.polarity})</h3>
-                        <p style={{color: "#555"}}>{matchingAnalyses.length} analyses matched</p>
-                        <div style={{marginTop: 12, display: "grid", gap: 12}}>
+                        <h3 className="m-0">Analyses containing &quot;{selected.word}&quot; ({selected.polarity})</h3>
+                        <p className="text-muted">{matchingAnalyses.length} analyses matched</p>
+                        <div className="grid-gap-12 mt-3">
                             {matchingAnalyses.map((r) => (
-                                <div key={r.id} style={{border: "1px solid #e6e6e6", padding: 12, borderRadius: 8}}>
-                                    <div style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center"
-                                    }}>
+                                <div key={r.id} className="analysis-card">
+                                    <div className="flex justify-between items-center">
                                         <div>
-                                            <div style={{fontWeight: 600}}>Analysis #{r.id}</div>
-                                            <div style={{color: "#666", fontSize: 13}}>
+                                            <div className="font-semibold">Analysis #{r.id}</div>
+                                            <div className="text-muted text-xs">
                                                 {r.transcript_id ? `Transcript ${r.transcript_id} · ` : ''}{r.created_at ? new Date(r.created_at).toLocaleString() : ''}
                                             </div>
                                         </div>
-                                        <div style={{display: "flex", gap: 8, alignItems: "center"}}>
-                                            <button onClick={() => toggleExpand(r.id)} style={{
-                                                padding: '6px 10px',
-                                                borderRadius: 6,
-                                                border: '1px solid #ccc',
-                                                background: expandedIds[r.id] ? '#f3f4f6' : '#fff'
-                                            }}> {expandedIds[r.id] ? 'Collapse' : 'Expand'}</button>
+                                        <div className="flex gap-2 items-center">
+                                            <button onClick={() => toggleExpand(r.id)}
+                                                    className={`btn-toggle ${expandedIds[r.id] ? 'btn-expanded' : ''}`}>
+                                                {expandedIds[r.id] ? 'Collapse' : 'Expand'}
+                                            </button>
                                         </div>
                                     </div>
 
                                     {expandedIds[r.id] ? (
-                                        <div style={{marginTop: 10}}>
-                                            <div style={{marginBottom: 8}}>
+                                        <div className="mt-2">
+                                            <div className="mb-2">
                                                 <strong>Summary</strong>
-                                                <div style={{marginTop: 6, color: '#00000'}}>{r.summary ??
-                                                    <em style={{color: '#666'}}>No summary</em>}</div>
+                                                <div className="mt-1 text-foreground">{r.summary ??
+                                                    <em className="text-muted">No summary</em>}</div>
                                             </div>
 
-                                            <div style={{display: 'flex', gap: 12}}>
-                                                <div style={{flex: 1}}>
-                                                    <strong style={{color: '#065f46'}}>Positive phrases</strong>
-                                                    <div style={{marginTop: 6}}>
+                                            <div className="flex gap-3">
+                                                <div className="flex-1">
+                                                    <strong className="text-positive">Positive phrases</strong>
+                                                    <div className="mt-1">
                                                         {(r.positive_feedback ?? []).length === 0 ?
-                                                            <div style={{color: '#666'}}>None</div> : (
+                                                            <div className="text-muted">None</div> : (
                                                                 (r.positive_feedback ?? []).map((p, i) => (
                                                                     <div key={i}
-                                                                         style={{padding: 4}}>{highlightPhrase(p, selected.word)}</div>
+                                                                         className="p-1">{highlightPhrase(p, selected.word)}</div>
                                                                 ))
                                                             )}
                                                     </div>
                                                 </div>
 
-                                                <div style={{flex: 1}}>
-                                                    <strong style={{color: '#7f1d1d'}}>Negative phrases</strong>
-                                                    <div style={{marginTop: 6}}>
+                                                <div className="flex-1">
+                                                    <strong className="text-negative">Negative phrases</strong>
+                                                    <div className="mt-1">
                                                         {(r.negative_feedback ?? []).length === 0 ?
-                                                            <div style={{color: '#666'}}>None</div> : (
+                                                            <div className="text-muted">None</div> : (
                                                                 (r.negative_feedback ?? []).map((p, i) => (
                                                                     <div key={i}
-                                                                         style={{padding: 4}}>{highlightPhrase(p, selected.word)}</div>
+                                                                         className="p-1">{highlightPhrase(p, selected.word)}</div>
                                                                 ))
                                                             )}
                                                     </div>
@@ -178,12 +158,12 @@ export default function ResultsClient({
                             ))}
 
                             {matchingAnalyses.length === 0 ? (
-                                <div style={{color: '#666'}}>No analyses contain that phrase.</div>
+                                <div className="text-muted">No analyses contain that phrase.</div>
                             ) : null}
                         </div>
                     </div>
                 ) : (
-                    <div style={{color: '#666'}}>Click a word in either cloud to see matching analyses here.</div>
+                    <div className="text-muted">Click a word in either cloud to see matching analyses here.</div>
                 )}
             </div>
         </div>

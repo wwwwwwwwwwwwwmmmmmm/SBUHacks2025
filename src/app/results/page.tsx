@@ -84,12 +84,9 @@ export default async function ResultsPage() {
 
     if (error) {
         return (
-            <main style={{
-                padding: 40,
-                fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial"
-            }}>
-                <h1 style={{marginBottom: 12}}>Analyses</h1>
-                <div style={{color: "red"}}>Error loading analyses: {error.message}</div>
+            <main className="page-main">
+                <h1 className="mb-3">Analyses</h1>
+                <div className="text-negative">Error loading analyses: {error.message}</div>
             </main>
         );
     }
@@ -165,11 +162,10 @@ export default async function ResultsPage() {
     const totalNegPhrases = rows.reduce((acc, r) => acc + (Array.isArray(r.negative_feedback) ? r.negative_feedback.length : 0), 0);
 
     return (
-        <main
-            style={{padding: 40, fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial"}}>
-            <header style={{marginBottom: 20}}>
-                <h1 style={{fontSize: 28, margin: 0}}>Feedback Word Clouds</h1>
-                <p style={{margin: "8px 0 0 0", color: "#555"}}>Aggregated from {rows.length} analyses
+        <main className="page-main">
+            <header className="page-header">
+                <h1 className="h1-title">Feedback Word Clouds</h1>
+                <p className="text-muted">Aggregated from {rows.length} analyses
                     — {totalPosPhrases} positive phrases, {totalNegPhrases} negative phrases</p>
             </header>
 

@@ -64,14 +64,14 @@ export default function WordCloud({
 
     const handleWordMouseOver = useCallback(
         (_word: FinalWordData, _index: number, event: WordMouseEvent) => {
-            const element = event.currentTarget;
+            const element = event.currentTarget as SVGTextElement;
 
             // Store original transform and transition if not stored
             if (!element.dataset.originalTransform) {
                 element.dataset.originalTransform = element.getAttribute("transform") || "";
             }
             if (!element.dataset.originalTransition) {
-                element.dataset.originalTransition = element.style.transition || "";
+                element.dataset.originalTransition = (element.style && element.style.transition) || "";
             }
 
             // Smooth scale
@@ -87,10 +87,10 @@ export default function WordCloud({
             // Drop shadow
             element.style.filter = `drop-shadow(2px 4px 6px rgba(0,0,0,0.15))`;
 
-            // Hover colors: use darker shades for hover so base colors can be light
-            const positiveHover = '#059669'; // dark green
-            const negativeHover = '#b91c1c'; // dark red
-            const neutralHover = '#f59e0b'; // amber fallback
+            // Hover colors (theme-aware via CSS variables)
+            const positiveHover = 'var(--positive-hover)'; // CSS variable defined in globals.css
+            const negativeHover = 'var(--negative-hover)';
+            const neutralHover = 'var(--positive)'; // fallback to positive tint
 
             element.style.cursor = 'pointer';
             element.style.fill = wordType > 0 ? positiveHover : wordType < 0 ? negativeHover : neutralHover;
@@ -100,7 +100,7 @@ export default function WordCloud({
 
     const handleWordMouseOut = useCallback(
         (_word: FinalWordData, _index: number, event: WordMouseEvent) => {
-            const element = event.currentTarget;
+            const element = event.currentTarget as SVGTextElement;
 
             const originalTransform = element.dataset.originalTransform || "";
             element.setAttribute("transform", originalTransform);
@@ -109,7 +109,8 @@ export default function WordCloud({
 
             element.style.filter = "";
             element.style.cursor = "";
-            element.style.fill = _word.fill;
+            // Use the fill from the word if present, otherwise fall back to defaultFill (string)
+            element.style.fill = _word.fill ?? (defaultFill as string);
         },
         []
     );
@@ -127,10 +128,10 @@ export default function WordCloud({
     );
 
     return (
-        <div style={{padding: 12}}>
-            {title && <h3 style={{marginBottom: 8}}>{title}</h3>}
+        <div className="wc-container">
+            {title && <h3 className="wc-title">{title}</h3>}
             {entries.length === 0 ? (
-                <div style={{color: "#666"}}>No words to display.</div>
+                <div className="text-muted">No words to display.</div>
             ) : (
                 <WordCloudLib
                     words={entries}

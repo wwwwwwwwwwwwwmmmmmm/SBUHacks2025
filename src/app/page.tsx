@@ -159,9 +159,9 @@ export default function Home() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+        <div className="flex min-h-screen items-center justify-center bg-background font-sans">
             <main
-                className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-20 px-6 bg-white dark:bg-black">
+                className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-20 px-6 bg-background">
 
                 <div
                     onDrop={onDrop}
@@ -171,7 +171,7 @@ export default function Home() {
                     onClick={() => {
                         if (!uploading) fileInputRef.current?.click();
                     }}
-                    className={`flex w-full max-w-2xl cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-50 p-8 text-center hover:border-zinc-400 dark:bg-[#0b0b0b] ${uploading ? 'opacity-60 pointer-events-none' : ''}`}
+                    className={`flex w-full max-w-2xl cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-card-border bg-card p-8 text-center hover:border-primary ${uploading ? 'opacity-60 pointer-events-none' : ''}`}
                 >
                     <input
                         ref={fileInputRef}
@@ -185,7 +185,7 @@ export default function Home() {
                     <div className="flex flex-col items-center gap-2">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-12 w-12 text-zinc-600"
+                            className="h-12 w-12 text-muted"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -196,7 +196,7 @@ export default function Home() {
                             <path strokeLinecap="round" strokeLinejoin="round"
                                   d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         </svg>
-                        <div className="text-lg font-medium text-zinc-800 dark:text-zinc-50">
+                        <div className="text-lg font-medium text-foreground">
                             Drop a .txt file here or click to upload
                         </div>
                     </div>
@@ -204,32 +204,32 @@ export default function Home() {
 
                 <div className="mt-8 w-full max-w-2xl">
                     {error && (
-                        <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+                        <div className="rounded-md bg-[rgba(var(--color-negative)/0.08)] p-3 text-sm text-negative">
                             {error}
                         </div>
                     )}
 
                     {!fileName && !error && (
-                        <div className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+                        <div className="mt-4 text-sm text-muted">
                             No file selected
                         </div>
                     )}
 
                     {fileName && (
-                        <div className="mt-4 rounded-md border border-zinc-100 bg-zinc-50 p-4 dark:border-[#222]">
+                        <div className="mt-4 rounded-md border border-card-border bg-card p-4">
                             <div className="mb-2 flex items-center justify-between">
                                 <div>
-                                    <div className="text-sm font-medium text-zinc-800 dark:text-zinc-50">
+                                    <div className="text-sm font-medium text-foreground">
                                         {fileName}
                                     </div>
-                                    <div className="text-xs text-zinc-500">
+                                    <div className="text-xs text-muted">
                                         {fileSize} bytes
                                     </div>
                                 </div>
                                 <div>
                                     <button
                                         onClick={() => reset()}
-                                        className="rounded-md bg-zinc-100 px-3 py-1 text-sm hover:bg-zinc-200 dark:bg-zinc-900"
+                                        className="rounded-md btn-toggle px-3 py-1 text-sm"
                                         disabled={uploading}
                                     >
                                         Clear
@@ -238,8 +238,8 @@ export default function Home() {
                             </div>
 
                             <div className="mt-2 text-sm">
-                                <div className="mb-2 text-xs text-zinc-500">Summary</div>
-                                <div className="grid grid-cols-3 gap-2 text-sm text-zinc-700 dark:text-zinc-200">
+                                <div className="mb-2 text-xs text-muted">Summary</div>
+                                <div className="grid grid-cols-3 gap-2 text-sm text-foreground">
                                     <div>Lines: {lines.length}</div>
                                     <div>
                                         Non-empty lines:{" "}
@@ -247,23 +247,23 @@ export default function Home() {
                                     </div>
                                     <div>
                                         {uploading ? (
-                                            <span className="text-xs text-zinc-500">Uploading...</span>
+                                            <span className="text-xs text-muted">Uploading...</span>
                                         ) : publicUrl ? (
-                                            <a className="text-xs text-blue-600" href={publicUrl} target="_blank"
+                                            <a className="text-xs text-primary" href={publicUrl} target="_blank"
                                                rel="noreferrer">View file</a>
                                         ) : (
-                                            <span className="text-xs text-zinc-500">Not uploaded</span>
+                                            <span className="text-xs text-muted">Not uploaded</span>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="mt-4 text-xs text-zinc-500">
+                                <div className="mt-4 text-xs text-muted">
                                     Preview (first 20 lines)
                                 </div>
                                 <div
-                                    className="mt-2 max-h-64 overflow-auto rounded border border-zinc-100 bg-white p-3 text-xs text-zinc-800 dark:bg-[#060606] dark:text-zinc-200">
+                                    className="mt-2 max-h-64 overflow-auto rounded border border-card-border bg-card p-3 text-xs text-foreground">
                                     {lines.length === 0 ? (
-                                        <div className="text-zinc-400">(empty file)</div>
+                                        <div className="text-muted">(empty file)</div>
                                     ) : (
                                         <ol className="ml-4 list-decimal">
                                             {lines.slice(0, 20).map((l, i) => (
@@ -271,7 +271,7 @@ export default function Home() {
                                                     <div className="flex items-start justify-between gap-4">
                                                         <div className="whitespace-pre-wrap break-words">
                                                             {l || (
-                                                                <span className="text-zinc-400">(blank)</span>
+                                                                <span className="text-muted">(blank)</span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -283,12 +283,12 @@ export default function Home() {
 
                                 {/* AI result */}
                                 <div className="mt-4 text-sm">
-                                    <div className="mb-1 text-xs text-zinc-500">AI analysis</div>
-                                    {uploading && <div className="text-xs text-zinc-500">Processing...</div>}
+                                    <div className="mb-1 text-xs text-muted">AI analysis</div>
+                                    {uploading && <div className="text-xs text-muted">Processing...</div>}
                                     {!uploading && aiResult && (
-                                        <div className="rounded bg-zinc-50 p-3 text-xs text-zinc-800 dark:bg-[#080808]">
+                                        <div className="rounded bg-card p-3 text-xs text-foreground">
                                             <div className="mb-1"><strong>Summary:</strong> {aiResult.summary}</div>
-                                            <div className="text-xs text-zinc-500">Lines: {aiResult.lineCount}</div>
+                                            <div className="text-xs text-muted">Lines: {aiResult.lineCount}</div>
                                             {aiResult.topWords && (
                                                 <div className="mt-2 text-xs">Top
                                                     words: {aiResult.topWords.join(", ")}</div>

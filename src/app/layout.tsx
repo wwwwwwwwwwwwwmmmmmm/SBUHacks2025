@@ -1,7 +1,11 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type {Metadata} from "next";
+import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import React from "react";
+import Link from "next/link";
+import ThemeToggle from "../components/ThemeToggle";
+import Script from 'next/script';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,14 +24,19 @@ export const metadata: Metadata = {
 
 function Navbar() {
   return (
-    <nav className="bg-gray-800 text-white p-4 flex justify-between">
+      <nav className="bg-primary-strong text-on-primary p-4 flex justify-between items-center">
       <div className="font-bold text-lg">
-        <a href="/" className="hover:text-gray-300">CLP Flow</a>
+          <Link href="/" className="hover:text-primary">CLP Flow</Link>
       </div>
-      <div className="space-x-4">
-        <a href="/" className="hover:text-gray-300">Home</a>
-        <a href="/results" className="hover:text-gray-300">Data</a>
-        <a href="/chatbot" className="hover:text-gray-300">Chatbot</a>
+          <div className="flex items-center space-x-4">
+              <div className="space-x-4 hidden sm:inline">
+                  <Link href="/" className="hover:text-primary">Home</Link>
+                  <Link href="/results" className="hover:text-primary">Data</Link>
+                  <Link href="/chatbot" className="hover:text-primary">Chatbot</Link>
+              </div>
+              <div className="flex items-center space-x-4">
+                  <ThemeToggle/>
+              </div>
       </div>
     </nav>
   );
@@ -43,6 +52,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+      {/* Inline script to apply saved theme before React hydrates (prevents FOUC and ensures Tailwind 'dark' class is present) */}
+      <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem('theme');var el=document.body; if(t==='dark'){el.classList.add('dark'); el.classList.remove('light');} else {el.classList.add('light'); el.classList.remove('dark');}}catch(e){} })();`}
+      </Script>
         <Navbar />
         <main>{children}</main>
       </body>

@@ -1,6 +1,6 @@
 import React from "react";
 import {createClient} from "@/utils/supabase/server";
-import WordCloud from "../../components/WordCloud";
+import ResultsClient from "./ResultsClient";
 
 // Define the Analysis schema to match your database table (analyses)
 type Analysis = {
@@ -52,6 +52,19 @@ const STOP_WORDS = new Set([
     "our",
 ]);
 
+// Create contiguous n-grams (1..maxN) from a token array
+function extractNgrams(tokens: string[], maxN = 3) {
+    const ngrams: string[] = [];
+    const n = tokens.length;
+    for (let size = 1; size <= Math.min(maxN, n); size++) {
+        for (let i = 0; i + size <= n; i++) {
+            const slice = tokens.slice(i, i + size);
+            ngrams.push(slice.join(" "));
+        }
+    }
+    return ngrams;
+}
+
 function getTopCounts(counts: Record<string, number>, topN = 60) {
     return Object.fromEntries(
         Object.entries(counts)
@@ -91,19 +104,53 @@ export default async function ResultsPage() {
         const pos = Array.isArray(row.positive_feedback) ? row.positive_feedback : [];
         const neg = Array.isArray(row.negative_feedback) ? row.negative_feedback : [];
 
+        // process positive phrases
         for (const phrase of pos) {
             if (!phrase || phrase.trim() === "") continue;
-            for (const token of cleanAndSplit(phrase)) {
-                if (STOP_WORDS.has(token) || token.length <= 2) continue;
-                posCounts[token] = (posCounts[token] || 0) + 1;
+
+            const tokens = cleanAndSplit(phrase);
+            if (tokens.length === 0) continue;
+
+            // get unigrams, bigrams, trigrams
+            const ngrams = extractNgrams(tokens, 3);
+
+            for (const ng of ngrams) {
+                // skip very short joins
+                if (ng.length <= 2) continue;
+
+                // skip n-grams that are all stop words
+                const parts = ng.split(" ");
+                const allStop = parts.every(p => STOP_WORDS.has(p));
+                if (allStop) continue;
+
+                // also skip n-grams where every token is <=2 characters
+                const anyLong = parts.some(p => p.length > 2);
+                if (!anyLong) continue;
+
+                posCounts[ng] = (posCounts[ng] || 0) + 1;
             }
         }
 
+        // process negative phrases
         for (const phrase of neg) {
             if (!phrase || phrase.trim() === "") continue;
-            for (const token of cleanAndSplit(phrase)) {
-                if (STOP_WORDS.has(token) || token.length <= 2) continue;
-                negCounts[token] = (negCounts[token] || 0) + 1;
+
+            const tokens = cleanAndSplit(phrase);
+            if (tokens.length === 0) continue;
+
+            const ngrams = extractNgrams(tokens, 3);
+
+            for (const ng of ngrams) {
+                if (ng.length <= 2) continue;
+
+                const parts = ng.split(" ");
+                const allStop = parts.every(p => STOP_WORDS.has(p));
+                if (allStop) continue;
+
+                const anyLong = parts.some(p => p.length > 2);
+                if (!anyLong) continue;
+
+                negCounts[ng] = (negCounts[ng] || 0) + 1;
             }
         }
     }
@@ -126,41 +173,11 @@ export default async function ResultsPage() {
                     — {totalPosPhrases} positive phrases, {totalNegPhrases} negative phrases</p>
             </header>
 
-            <section style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24}}>
-                <div style={{
-                    background: "linear-gradient(180deg,#f0fdf4,#ffffff)",
-                    padding: 18,
-                    borderRadius: 12,
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
-                    border: "1px solid rgba(16,185,129,0.08)"
-                }}>
-                    <h2 style={{marginTop: 0, marginBottom: 8, color: "#065f46"}}>Positive</h2>
-                    <p style={{marginTop: 0, marginBottom: 12, color: "#065f46"}}>{Object.keys(topPos).length} unique
-                        words</p>
-                    <div style={{width: "100%", height: 420}}>
-                        <WordCloud title="" wordCounts={topPos} fill="#059669"/>
-                    </div>
-                </div>
-
-                <div style={{
-                    background: "linear-gradient(180deg,#fff7f6,#ffffff)",
-                    padding: 18,
-                    borderRadius: 12,
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
-                    border: "1px solid rgba(239,68,68,0.06)"
-                }}>
-                    <h2 style={{marginTop: 0, marginBottom: 8, color: "#7f1d1d"}}>Negative</h2>
-                    <p style={{marginTop: 0, marginBottom: 12, color: "#7f1d1d"}}>{Object.keys(topNeg).length} unique
-                        words</p>
-                    <div style={{width: "100%", height: 420}}>
-                        <WordCloud title="" wordCounts={topNeg} fill="#dc2626"/>
-                    </div>
-                </div>
+            {/* Client component handles interactive clouds and analysis expansion */}
+            <section>
+                <ResultsClient rows={rows} topPos={topPos} topNeg={topNeg} totalPosPhrases={totalPosPhrases}
+                               totalNegPhrases={totalNegPhrases}/>
             </section>
-
-            <footer style={{marginTop: 28, color: "#666"}}>
-                <small>Word clouds show top {TOP_N} words by frequency (stop words removed).</small>
-            </footer>
         </main>
     );
 }

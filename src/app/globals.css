@@ -281,6 +281,11 @@ body {
     /* ensure the bar visually separates from page content */
     margin-bottom: 14px;
     z-index: 40;
+
+    /* expose an explicit navbar-height variable so pages can subtract it from 100vh
+       to avoid the page content overflowing below the navbar. Adjust if your actual
+       navbar has a different height (default chosen as 64px). */
+    --app-navbar-height: 64px;
 }
 
 /* Explicit theme-aware overrides to guarantee visible changes when the body toggles .light/.dark */
@@ -431,4 +436,37 @@ body {
         padding-left: 10px;
         padding-right: 10px;
     }
+}
+
+/* Make navbar-height available globally (variables on .app-navbar don't inherit to siblings) */
+:root {
+    --app-navbar-height: 64px;
+    --app-navbar-margin-bottom: 14px;
+}
+
+/* Helper class to apply the viewport-minus-navbar height calculation reliably (non-Tailwind) */
+.app-content-height {
+    height: calc(100vh - var(--app-navbar-height) - var(--app-navbar-margin-bottom));
+}
+
+.blue-man {
+    background: rgb(var(--navbar-blue) / 1);
+}
+
+/* Hide the white box / set transparent track */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* removes the white box */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(59, 130, 246, 0.5); /* Tailwind's blue-500 at 50% opacity */
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(59, 130, 246, 0.8);
 }

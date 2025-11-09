@@ -2,6 +2,8 @@
 
 import React, {useCallback, useRef, useState} from "react";
 import {useRouter} from 'next/navigation';
+import Link from "next/link";
+import Image from "next/image";
 
 interface AiResult {
     summary: string;
@@ -159,10 +161,24 @@ export default function Home() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-background font-sans">
+        <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
             <main
-                className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-20 px-6 bg-background">
+                className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-20 px-6 bg-white dark:bg-black">
 
+                <Image src="/favicon.png" alt="Our company logo" width={250} height={250} className="mx-auto"/>
+
+                <h1 className="text-4xl font-bold text-black dark:text-black mb-6">
+                    Our Mission
+                </h1>
+                <p className="text-lg text-black dark:text-black max-w-2xl mx-auto mb-10">
+                    Our mission is to transform raw conversation transcripts into actionable intelligence. CLP instantly distills the essence of any dialogue, surfacing the critical pros and cons for rapid evaluation, and providing an intuitive, conversational AI to summarize and answer any remaining questions about the details.
+                </p>
+                <Link
+                    href="/about"
+                    className="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition"
+                >
+                    Learn More About Us
+                </Link>
                 <div
                     onDrop={onDrop}
                     onDragOver={onDragOver}
@@ -171,7 +187,7 @@ export default function Home() {
                     onClick={() => {
                         if (!uploading) fileInputRef.current?.click();
                     }}
-                    className={`flex w-full max-w-2xl cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-card-border bg-card p-8 text-center hover:border-primary ${uploading ? 'opacity-60 pointer-events-none' : ''}`}
+                    className={`flex w-full max-w-2xl cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-50 p-8 text-center hover:border-zinc-400 dark:bg-[#0b0b0b] ${uploading ? 'opacity-60 pointer-events-none' : ''}`}
                 >
                     <input
                         ref={fileInputRef}
@@ -185,7 +201,7 @@ export default function Home() {
                     <div className="flex flex-col items-center gap-2">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-12 w-12 text-muted"
+                            className="h-12 w-12 text-zinc-600"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -196,7 +212,7 @@ export default function Home() {
                             <path strokeLinecap="round" strokeLinejoin="round"
                                   d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         </svg>
-                        <div className="text-lg font-medium text-foreground">
+                        <div className="text-lg font-medium text-zinc-800 dark:text-zinc-50">
                             Drop a .txt file here or click to upload
                         </div>
                     </div>
@@ -204,7 +220,7 @@ export default function Home() {
 
                 <div className="mt-8 w-full max-w-2xl">
                     {error && (
-                        <div className="rounded-md bg-[rgba(var(--color-negative)/0.08)] p-3 text-sm text-negative">
+                        <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
                             {error}
                         </div>
                     )}

@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 
+let sessionHolder = 100;
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]>([]);
   const [input, setInput] = useState("");
@@ -31,6 +33,14 @@ export default function ChatPage() {
         },
         body: JSON.stringify({
           question: input, // minimal required field
+          "user_session": {
+            "metadata": {
+              "user_id": sessionHolder
+            },
+            "system": {
+              "session_id": sessionHolder
+            }
+          },
         }),
       });
 

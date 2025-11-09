@@ -186,15 +186,18 @@ body {
 }
 
 .btn-toggle {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--card-border);
-    background: transparent;
-    color: var(--foreground);
-}
-
-.btn-expanded {
-    background: rgba(255, 255, 255, 0.04);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 10px;
+    min-width: 44px;
+    height: 36px;
+    border-radius: 9999px;
+    font-size: 1.02rem;
+    background: transparent; /* default replaced by nav-link class */
+    border: none; /* default replaced by nav-link class */
+    cursor: pointer;
 }
 
 /* small helpers */
@@ -295,32 +298,122 @@ body {
     box-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
 }
 
-/* Link styles inside the navbar */
+/* Link styles inside the navbar (enhanced look) */
 .nav-link {
-    color: rgb(255 255 255 / 0.95);
-    padding: 6px 10px;
-    border-radius: 6px;
-    text-decoration: none;
+    /* Slightly larger padding and pill shape to make links feel like buttons */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 9999px; /* pill */
+
+    /* text styling */
+    color: rgb(255 255 255 / 0.98);
     font-weight: 600;
-    letter-spacing: 0.2px;
-    transition: background-color 0.12s ease, color 0.12s ease, transform 0.08s ease;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+
+    /* subtle translucent background to separate from the navbar color (tuned down to be theme-overrideable) */
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    transition: background-color 160ms ease, transform 80ms ease, box-shadow 160ms ease;
+    box-shadow: none;
+    min-height: 36px;
+    line-height: 1;
 }
 
-/* Add noticeable gap between inline nav-links (in case utility spacing isn't applied) */
-.app-navbar .nav-link + .nav-link {
-    margin-left: 12px;
+/* Theme-aware stronger contrasts for links */
+.light .nav-link {
+    /* On the darker light-mode navbar, use a slightly brighter translucent white to pop */
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgb(255 255 255 / 1);
 }
 
-.nav-link:hover,
+.dark .nav-link {
+    /* On dark mode, darken the link background a little so it reads as a solid pill */
+    background: rgba(0, 0, 0, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgb(255 255 255 / 1);
+}
+
+/* Button-like interactions */
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: rgb(255 255 255 / 1);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.24);
+}
+
+.nav-link:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
 .nav-link:focus {
-    background: rgba(255, 255, 255, 0.06);
-    color: rgb(255 255 255 / 1);
-    transform: translateY(-1px);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
 }
 
-/* Make sure the brand/title stands out a bit more */
-.app-navbar .font-bold {
+/* Toggle pressed state: useful for ThemeToggle which uses nav-link class */
+.nav-link[aria-pressed="true"] {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.22);
+}
+
+/* Brand/Logo styling: more prominent pill with accent */
+.nav-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 1.03rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+
+    /* stronger translucent backdrop so the brand pops on the navbar */
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.20);
     color: rgb(255 255 255 / 1);
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.24);
+    text-decoration: none;
+}
+
+/* Theme-specific brand tuning */
+.light .nav-brand {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.dark .nav-brand {
+    /* Slightly darker brand on dark mode so it doesn't glare */
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Small white accent dot left of the brand name */
+/*.nav-brand::before {*/
+/*    content: "";*/
+/*    display: inline-block;*/
+/*    width: 8px;*/
+/*    height: 8px;*/
+/*    border-radius: 50%;*/
+/*    background: rgb(255 255 255 / 0.95);*/
+/*    box-shadow: 0 1px 0 rgba(0,0,0,0.12) inset;*/
+/*}*/
+
+.nav-brand:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateY(-2px);
+}
+
+/* Accessibility: focus-visible stronger ring */
+.btn-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
 }
 
 /* Responsive tweak: ensure mobile nav has adequate spacing */
@@ -329,9 +422,13 @@ body {
         padding-left: 14px;
         padding-right: 14px;
     }
-
     .app-navbar .nav-link {
         padding-left: 8px;
         padding-right: 8px;
+    }
+
+    .nav-brand {
+        padding-left: 10px;
+        padding-right: 10px;
     }
 }

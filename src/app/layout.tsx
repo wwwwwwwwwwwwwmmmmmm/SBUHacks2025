@@ -26,7 +26,7 @@ function Navbar() {
   return (
       <nav className={`${geistSans.variable} app-navbar text-on-primary p-4 flex justify-between items-center`}>
       <div className="font-bold text-lg">
-          <Link href="/" className="nav-link">CLP Flow</Link>
+          <Link href="/" className="nav-link nav-brand">CLP</Link>
       </div>
           <div className="flex items-center space-x-4">
               <div className="hidden sm:flex sm:items-center sm:space-x-6">

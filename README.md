@@ -1,4 +1,4 @@
-# 🎧 CLP Flow — Call Listener Portal
+# 🎧 CLP — Call Listener Portal
 ### AI-Powered Insights from Every Customer Conversation
 
 ---
@@ -16,7 +16,9 @@ Manual review is slow, and simple keyword analytics miss nuance.
 ---
 
 ## ⚙️ The Solution
-**CLP Flow (Call Listener Portal)** is a **B2B SaaS platform** that transforms customer service transcripts into **actionable insights** powered by **NeuralSeek AI**.  
+
+**CLP (Call Listener Portal)** is a **B2B SaaS platform** that transforms customer service transcripts into **actionable
+insights** powered by **NeuralSeek AI**.
 
 Our system automatically:  
 1. **Ingests call transcripts** and stores them in both a **SQL database** and a **NeuralSeek knowledge base**.  
@@ -24,7 +26,8 @@ Our system automatically:
 3. Displays interactive **word clouds** of the most common positive and negative themes.  
 4. Lets managers **click any word** to instantly view the transcripts and summaries where it appeared.  
 
-And that’s not all — managers can **chat directly with CLP Flow’s AI assistant** to explore trends conversationally:  
+And that’s not all — managers can **chat directly with CLP’s AI assistant** to explore trends conversationally:
+
 - “What were the top complaints this week?”  
 - “Show me positive mentions about communication.”  
 - “Summarize issues related to billing in the past 7 days.”  
@@ -43,7 +46,8 @@ This enables a true **back-and-forth discovery experience** — turning every tr
 
 ## 🤖 Why AI Matters
 Traditional analytics can’t interpret tone, context, or emotion.  
-By integrating NeuralSeek’s AI capabilities, CLP Flow can:  
+By integrating NeuralSeek’s AI capabilities, CLP can:
+
 - **Understand customer sentiment** beyond keywords.  
 - **Summarize calls** automatically with natural language understanding.  
 - **Enable direct chat-based exploration** across all transcripts.  
@@ -53,11 +57,13 @@ It’s not just data — it’s **conversational business intelligence**.
 ---
 
 ## 🚀 Impact
-CLP Flow helps businesses:  
+
+CLP helps businesses:
+
 - **Spot recurring customer issues** early.  
 - **Recognize high-performing agents** and communication patterns.  
 - **Make informed process changes** based on data, not guesses.  
 
-By turning transcripts into knowledge, CLP Flow helps companies **listen, learn, and lead smarter**.  
+By turning transcripts into knowledge, CLP helps companies **listen, learn, and lead smarter**.
 
 ---

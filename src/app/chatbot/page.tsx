@@ -20,28 +20,38 @@ export default function ChatPage() {
     setInput("");
 
     try {
-      // --- NeuralSeek API call ---
-      const apiKey = process.env.NEURALSEEK_API_KEY; // add your key in .env
-      const response = await fetch('https://api.neuralseek.com/chat', {
-        method: 'POST',
+      const apiKey = process.env.NEXT_PUBLIC_NEURALSEEK_API_KEY;
+      if (!apiKey) throw new Error("NeuralSeek API key not set in env");
+
+      const response = await fetch("https://stagingapi.neuralseek.com/v1/stony18/seek", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "apikey": apiKey, // exactly like the cURL example
         },
         body: JSON.stringify({
-          message: input,
-          // Add additional fields as required by NeuralSeek agent
-          agent: 'default',
-          sessionId: 'your-session-id',
+          question: input, // minimal required field
         }),
       });
 
-      const data = await response.json();
-      const aiMessage = { role: 'ai' as const, text: data.reply || '<No response>' };
+      // NeuralSeek might return non-JSON on error, so check content-type first
+      const contentType = response.headers.get("content-type") || "";
+      let data: any = {};
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(`Server did not return JSON: ${text}`);
+      }
+
+      const aiMessage = {
+        role: "ai" as const,
+        text: data.answer ?? data.response ?? "<No response received>",
+      };
       setMessages((prev) => [...prev, aiMessage]);
-    } catch (err) {
-      console.error('AI call failed', err);
-      const aiMessage = { role: 'ai' as const, text: 'Failed to get response from AI.' };
+    } catch (err: any) {
+      console.error("AI call failed", err);
+      const aiMessage = { role: "ai" as const, text: `Failed to get response from AI: ${err.message}` };
       setMessages((prev) => [...prev, aiMessage]);
     }
   };
@@ -58,11 +68,10 @@ export default function ChatPage() {
           <div
             key={i}
             className={`inline-block p-3 rounded-lg whitespace-pre-wrap break-words transition-all duration-300 ease-in-out transform hover:scale-105 ${
-              m.role === 'user'
-                ? 'ml-auto bg-blue-500 text-white max-w-[55%]'
-                : 'mr-auto bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white max-w-[55%]'
+              m.role === "user"
+                ? "ml-auto bg-blue-500 text-white max-w-[55%]"
+                : "mr-auto bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white max-w-[55%]"
             }`}
-
           >
             {m.text}
           </div>
@@ -77,7 +86,7 @@ export default function ChatPage() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           className="flex-1 p-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-black dark:text-white"
           placeholder="Type a message..."
         />

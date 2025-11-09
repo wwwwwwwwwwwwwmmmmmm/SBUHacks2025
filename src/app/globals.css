@@ -108,6 +108,9 @@
 
     --shadow-1: 0 6px 18px rgba(0, 0, 0, 0.6);
     --shadow-2: 0 6px 18px rgba(0, 0, 0, 0.5);
+
+    --positive-hover: rgb(var(--color-positive-strong) / 1);
+    --negative-hover: rgb(var(--color-negative-strong) / 1);
 }
 
 /* Base page */

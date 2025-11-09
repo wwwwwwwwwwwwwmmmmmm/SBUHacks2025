@@ -21,7 +21,9 @@ export const metadata: Metadata = {
 function Navbar() {
   return (
     <nav className="bg-gray-800 text-white p-4 flex justify-between">
-      <div className="font-bold text-lg">CLPFlow</div>
+      <div className="font-bold text-lg">
+        <a href="/" className="hover:text-gray-300">CLP Flow</a>
+      </div>
       <div className="space-x-4">
         <a href="/" className="hover:text-gray-300">Home</a>
         <a href="/results" className="hover:text-gray-300">Data</a>

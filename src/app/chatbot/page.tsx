@@ -23,48 +23,85 @@ export default function ChatPage() {
 
     try {
       const apiKey = process.env.NEXT_PUBLIC_NEURALSEEK_API_KEY;
-      if (!apiKey) throw new Error("NeuralSeek API key not set in env");
+      if (!apiKey) throw new Error("NeuralSeek API key not set");
 
-      const response = await fetch("https://stagingapi.neuralseek.com/v1/stony18/seek", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": apiKey, // exactly like the cURL example
-        },
-        body: JSON.stringify({
-          question: input, // minimal required field
-          "user_session": {
-            "metadata": {
-              "user_id": sessionHolder
-            },
-            "system": {
-              "session_id": sessionHolder
-            }
+      // Add empty AI message first so we can append chunks
+      const aiMessage: { role: "ai"; text: string } = { role: "ai", text: "" };
+      const aiMessageIndex = messages.length + 1;
+      setMessages((prev) => [...prev, aiMessage]);
+
+      const response = await fetch(
+        "https://stagingapi.neuralseek.com/v1/stony18/seek",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": apiKey,
           },
-        }),
-      });
+          body: JSON.stringify({
+            question: input,
+            user_session: {
+              // metadata: { user_id: sessionHolder },
+              system: { session_id: sessionHolder },
+            },
+            options: {
+              streaming: true,
+            },
+            "promptEngineering": "true",
+            "promptEngineeringPhrase": "You are interacting only with management and providing data and insight into some form of uploaded transcripts, you are not interfacing with customers. Be assertive and act like a helpful customer service representative. All prompts are to be assumed in relation to the knowledge base documents.",
+            "lastTurn": [
+              {
+                "input": messages[messages.length - 2],
+                "response": messages[messages.length - 1]
+              }
+            ],
+          }),
+        }
+    );
 
-      // NeuralSeek might return non-JSON on error, so check content-type first
-      const contentType = response.headers.get("content-type") || "";
-      let data: any = {};
-      if (contentType.includes("application/json")) {
-        data = await response.json();
-      } else {
-        const text = await response.text();
-        throw new Error(`Server did not return JSON: ${text}`);
+    if (!response.body) throw new Error("ReadableStream not supported");
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      // NeuralSeek sends chunks separated by newlines
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? ""; // keep incomplete line for next read
+
+      for (const line of lines) {
+        if (!line.startsWith("data:")) continue;
+        try {
+          const json = JSON.parse(line.replace(/^data:\s*/, ""));
+          if (json.chunk) {
+            // append to AI message
+            setMessages((prev) => {
+              const newMessages = [...prev];
+              newMessages[aiMessageIndex] = {
+                ...newMessages[aiMessageIndex],
+                text: newMessages[aiMessageIndex].text + json.chunk,
+              };
+              return newMessages;
+            });
+          }
+        } catch (err) {
+          console.warn("Failed to parse chunk", line, err);
+        }
       }
-
-      const aiMessage = {
-        role: "ai" as const,
-        text: data.answer ?? data.response ?? "<No response received>",
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-    } catch (err: any) {
-      console.error("AI call failed", err);
-      const aiMessage = { role: "ai" as const, text: `Failed to get response from AI: ${err.message}` };
-      setMessages((prev) => [...prev, aiMessage]);
     }
-  };
+  } catch (err: any) {
+    console.error("AI call failed", err);
+    const aiMessage = { role: "ai" as const, text: `Failed to get response: ${err.message}` };
+    setMessages((prev) => [...prev, aiMessage]);
+  }
+};
+// console.log(messages)
+
 
   return (
     <div className="flex flex-col h-screen w-full bg-zinc-100 dark:bg-black p-2">

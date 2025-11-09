@@ -28,8 +28,8 @@ function Navbar() {
       <div className="font-bold text-lg">
           <Link href="/" className="nav-link nav-brand">CLP</Link>
       </div>
-          <div className="flex items-center space-x-4">
-              <div className="hidden sm:flex sm:items-center sm:space-x-6">
+          <div className="flex items-center space-x-7">
+              <div className="hidden sm:flex sm:items-center sm:space-x-7">
                   <Link href="/" className="nav-link">Home</Link>
                   <Link href="/results" className="nav-link">Data</Link>
                   <Link href="/chatbot" className="nav-link">Chatbot</Link>

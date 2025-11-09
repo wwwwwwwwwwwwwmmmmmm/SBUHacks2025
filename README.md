@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎧 CLP Flow — Call Listener Portal
+### AI-Powered Insights from Every Customer Conversation
 
-## Getting Started
+---
 
-First, run the development server:
+## 💡 The Problem
+Customer service teams handle **countless calls and chats every day**, but **managers rarely have time to analyze them all**.  
+They often ask:  
+- What are customers most frustrated about?  
+- What do they consistently praise?  
+- Are there trends we’re missing?  
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Currently, the answers hide inside hours of raw transcripts — **unstructured, unread, and untapped**.  
+Manual review is slow, and simple keyword analytics miss nuance.  
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ The Solution
+**CLP Flow (Call Listener Portal)** is a **B2B SaaS platform** that transforms customer service transcripts into **actionable insights** powered by **NeuralSeek AI**.  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Our system automatically:  
+1. **Ingests call transcripts** and stores them in both a **SQL database** and a **NeuralSeek knowledge base**.  
+2. **Summarizes** each call, extracting **positive** and **negative feedback**.  
+3. Displays interactive **word clouds** of the most common positive and negative themes.  
+4. Lets managers **click any word** to instantly view the transcripts and summaries where it appeared.  
 
-## Learn More
+And that’s not all — managers can **chat directly with CLP Flow’s AI assistant** to explore trends conversationally:  
+- “What were the top complaints this week?”  
+- “Show me positive mentions about communication.”  
+- “Summarize issues related to billing in the past 7 days.”  
 
-To learn more about Next.js, take a look at the following resources:
+This enables a true **back-and-forth discovery experience** — turning every transcript into insight.  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧠 How It Works
+- **Frontend (Next.js + React):** Upload portal, analytics dashboard, and AI chat interface.  
+- **Backend (Node.js + Postgres):** Transcript storage, search, and API integration.  
+- **AI Layer (NeuralSeek + Watson Discovery):** Knowledge base ingestion, summarization, and conversational querying.  
+- **Visualization:** Interactive word clouds powered by D3.js / React Word Cloud.  
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🤖 Why AI Matters
+Traditional analytics can’t interpret tone, context, or emotion.  
+By integrating NeuralSeek’s AI capabilities, CLP Flow can:  
+- **Understand customer sentiment** beyond keywords.  
+- **Summarize calls** automatically with natural language understanding.  
+- **Enable direct chat-based exploration** across all transcripts.  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+It’s not just data — it’s **conversational business intelligence**.  
+
+---
+
+## 🚀 Impact
+CLP Flow helps businesses:  
+- **Spot recurring customer issues** early.  
+- **Recognize high-performing agents** and communication patterns.  
+- **Make informed process changes** based on data, not guesses.  
+
+By turning transcripts into knowledge, CLP Flow helps companies **listen, learn, and lead smarter**.  
+
+---

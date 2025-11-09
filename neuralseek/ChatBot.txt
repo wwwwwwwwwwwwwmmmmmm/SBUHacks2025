@@ -1,0 +1,20 @@
+<< name: input, prompt: true, desc: "User input" >>
+{{ profanity  }}
+{{ protect  | piThreshold: "0.9" | piRemoveThreshold: "0.6" }}
+{{ condition  | value: "<< name: protect.score, prompt: false >> >= 0.7" }}=>{{ variable  | name: "blocked" | value: "true" | mode: "overwrite" }}=>{{ stop  }}
+{{ condition  | value: "<< name: protect.score, prompt: false >> < 0.7" }}
+{{ PII  }}=>{{ variable  | name: "normalized" }}
+{{ sessionHistory  | sessionId: "<< name: sessionid, prompt: true >>" | turns: "10" }}=>{{ variable  | name: "history" }}
+{{ LLM  | prompt: "You are interacting only with management and providing data and insight into some form of uploaded transcripts.
+
+You are given previous chat history with a person as well as their new request. Return a single query that represents a question to be asked to a NeuralSeek's Knowledge based to provide the best answer. DO NOT RETURN ANYTHING ELSE BUT THE QUERY.
+
+New Request:
+<< name: normalized, prompt: false >>
+
+Chat History:
+<< name: history, prompt: false >>" | cache: "true" }}=>{{ variable  | name: "kbQuery" }}
+{{ kb  | query: "<< name: kbQuery, prompt: false >>" }}=>{{ variable  | name: "kbResponse" }}
+{{ condition  | value: "'<< name: kbResponse, prompt: false >>' == ''" }}=>
+I'm sorry, I don't have an answer for that.=>{{ stop  }}
+<< name: kbResponse, prompt: false >>

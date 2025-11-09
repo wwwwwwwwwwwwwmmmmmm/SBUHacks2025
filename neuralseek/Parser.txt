@@ -1,0 +1,6 @@
+{{ uuid  }}
+<< name: transcript, prompt: true, desc: "Text of the transcript" >>
+{{ PII  }}
+{{ protect  | piThreshold: "0.9" | piRemoveThreshold: "0.6" }}
+{{ LLM  | prompt: "Analyze the following transcript and output a structured JSON analysis. Include:\n- 'summary': a short paragraph summarizing the conversation.\n- 'positive_feedback': an array of short positive phrases (like 'resolved quickly').\n- 'negative_feedback': an array of short negative phrases (like 'long wait time').\nOutput must be valid JSON only, no explanations.\n\nHere is the transcript:\n<< name: transcript, prompt: false >>" | cache: "true" }}
+{{ jsonEscape  }}=>{{ variable  | name: "llmOutput" }}

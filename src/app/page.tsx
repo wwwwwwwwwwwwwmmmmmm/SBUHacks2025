@@ -113,6 +113,27 @@ export default function Home() {
         }
     }, [lines, router]);
 
+    // Helper to decode an ArrayBuffer using UTF-8 first and fall back to windows-1252
+    const decodeBuffer = (buffer: ArrayBuffer): string => {
+        // Try strict UTF-8 (fatal). If it fails (throws), fall back to windows-1252 which
+        // preserves smart/curly apostrophes and other cp1252 characters.
+        try {
+            // Use TextDecoder with fatal to detect invalid UTF-8 sequences
+            const td = new TextDecoder('utf-8', {fatal: true});
+            return td.decode(new Uint8Array(buffer));
+        } catch {
+            try {
+                // Fallback to windows-1252
+                const td2 = new TextDecoder('windows-1252');
+                return td2.decode(new Uint8Array(buffer));
+            } catch {
+                // As a last resort, do a permissive utf-8 decode (may contain replacement chars)
+                const td3 = new TextDecoder('utf-8');
+                return td3.decode(new Uint8Array(buffer));
+            }
+        }
+    };
+
     const handleFile = useCallback((file: File) => {
         reset();
         if (!file) return;
@@ -125,15 +146,21 @@ export default function Home() {
 
         const reader = new FileReader();
         reader.onload = async () => {
-            const text = String(reader.result ?? "");
-            parseText(text);
-            // upload-file in background and get AI result
-            await uploadToServer(file);
+            try {
+                const buffer = reader.result as ArrayBuffer;
+                const text = decodeBuffer(buffer);
+                parseText(text);
+                // upload-file in background and get AI result
+                await uploadToServer(file);
+            } catch {
+                setError('Failed to read or decode file.');
+            }
         };
         reader.onerror = () => {
             setError("Failed to read file.");
         };
-        reader.readAsText(file);
+        // Read as ArrayBuffer so we can control decoding (UTF-8 vs windows-1252)
+        reader.readAsArrayBuffer(file);
     }, [uploadToServer]);
 
     const onDrop: React.DragEventHandler<HTMLDivElement> = (e) => {

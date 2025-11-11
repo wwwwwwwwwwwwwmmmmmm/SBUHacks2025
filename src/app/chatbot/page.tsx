@@ -2,8 +2,6 @@
 
 import React, {useEffect, useRef, useState} from "react";
 
-const sessionHolder = 100;
-
 type Message = { role: "user" | "ai"; text: string };
 type Chat = { id: string; title?: string; messages: Message[]; updatedAt: number };
 
@@ -11,6 +9,8 @@ const STORAGE_KEY = "clp_recent_chats_v1";
 const MAX_RECENTS = 20;
 
 export default function ChatPage() {
+    const sessionHolder = Math.floor(Math.random() * (10000 - 500 + 1)) + 500;
+
     // Start empty; initialize on mount asynchronously to avoid impure render calls
     const [chats, setChats] = useState<Chat[]>([]);
     const [currentChatId, setCurrentChatId] = useState<string | null>(null);
@@ -138,7 +138,6 @@ export default function ChatPage() {
                         promptEngineering: "true",
                         promptEngineeringPhrase:
                             "You are interacting only with management and providing data and insight into some form of uploaded transcripts, you are not interfacing with customers. Be assertive and act like a helpful customer service representative. All prompts are to be assumed in relation to the knowledge base documents.",
-                        lastTurn: [],
                     }),
                 }
             );
